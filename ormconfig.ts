@@ -1,5 +1,6 @@
 import { createConnection } from "typeorm";
 import { todoapptable } from "./src/entitiy/todoapptable";
+import { Category } from "./src/entitiy/Category";
 createConnection({
   type: "mysql",
   host: "localhost",
@@ -8,6 +9,6 @@ createConnection({
   password: "password",
   logging: true,
   synchronize: true,
-  entities: [todoapptable],
+  entities: [todoapptable, Category],
 });
 export { createConnection };

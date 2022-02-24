@@ -1,14 +1,15 @@
 import { getConnection } from "typeorm";
 import { todoapptable } from "../entitiy/todoapptable";
-
+import { Category } from "../entitiy/Category";
 //insertdata
 export const adddata = async (req: any, res: any) => {
-  const { Title, Description, Date, Status } = req.body;
+  const { Title, Description, Date, Status, Categories } = req.body;
   const addata = todoapptable.create({
     Title: Title,
     Description: Description,
     Date: Date,
     Status: Status,
+    Categories: Categories,
   });
   await addata.save();
   return res.json(addata);
@@ -29,6 +30,7 @@ export const updatedata = async (req: any, res: any) => {
     })
     .where("id=:id", { id: id })
     .execute();
+
   return res.json(updatedatabyorm);
 };
 
@@ -61,5 +63,5 @@ export const updatedataparticullar = async (req: any, res: any) => {
     .set(req.body)
     .where("id=:id", { id: id })
     .execute();
-  return res.json(updatedataparticullar);
+  return res.json(updatedatupdatedataparticullarbyorm);
 };
