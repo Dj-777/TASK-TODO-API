@@ -50,3 +50,16 @@ export const deletedata = async (req: any, res: any) => {
   const deletedataorm = await todoapptable.delete({ id });
   return res.json(deletedataorm);
 };
+
+//updatedataparticullar
+export const updatedataparticullar = async (req: any, res: any) => {
+  const { id } = req.params;
+  const {} = req.body;
+  const updatedatupdatedataparticullarbyorm = await getConnection()
+    .createQueryBuilder()
+    .update(todoapptable)
+    .set(req.body)
+    .where("id=:id", { id: id })
+    .execute();
+  return res.json(updatedataparticullar);
+};
