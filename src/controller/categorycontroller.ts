@@ -1,27 +1,65 @@
 import { Category } from "../entitiy/Category";
-import { getConnection } from "typeorm";
+import { todoapptable, Categories } from "../entitiy/todoapptable";
+import { Any, createQueryBuilder, getConnection } from "typeorm";
 import { categoryrouter } from "../router/categoryrouter";
+import { getdata } from "./todousercontroller";
+import { on } from "events";
+import { Console } from "console";
 
 export const insertdatatocategory = async (req: any, res: any) => {
-  const { id } = req.params;
-  const { name, statuss } = req.body;
-  //   const insertdatatocategorybyorm = Category.create({
-  //     name: name,
-  //     statuss: statuss,
-  //   });
-  //   await insertdatatocategorybyorm.save();
-  
-  const insertdatatocategorybyorm = await getConnection()
-    .createQueryBuilder()
+  const { id, taskId } = req.params;
+  const { name } = req.body;
+  createQueryBuilder()
     .select("taskId")
     .from(Category, "taskId")
     .where("taskId.id=:id", { id: id })
     .insert()
     .into(Category)
-    .values([{ name: name, statuss: statuss, task: id }])
-    .execute(); 
+    .values([{ name: name, task: id }])
+    .execute();
+  const { updates } = req.body;
+};
 
-  return res.json(insertdatatocategorybyorm);
+export const updatestatus = async (req: any, res: any) => {
+  const { id, taskId } = req.params;
+
+  console.log(id);
+
+  const getdatatocategorybyorm = await getConnection()
+    .createQueryBuilder()
+    .select(["todoapptable.id", "todoapptable.Categories"])
+    .from(todoapptable, "todoapptable")
+    .where("todoapptable.id=:id", { id: id })
+    .innerJoinAndSelect(Category, "Category")
+    .andWhere("Category.taskId=:taskId", { taskId: taskId })
+    .execute();
+
+  const user = await Category.findOne(taskId);
+  console.log(user);
+
+  const update: any = getdatatocategorybyorm;
+
+  if (update === Categories.Home || update === Categories.Managmenet) {
+    user.statuss = "have";
+  } else {
+    user.statuss = "Not have";
+  }
+  await user.save();
+};
+
+//getdata
+export const categorygetdata = async (req: any, res: any) => {
+  const jointables = await getConnection();
+  createQueryBuilder()
+    // .select(["todoapptable.id"])
+    // .from(todoapptable, "id")
+    //.leftJoinAndSelect(Category, "TaskId")
+    .select(["todoapptable.id", "todoapptable.Categories"])
+    .from(todoapptable, "todoapptable")
+    .where("todoapptable.id=:id", { id: 1 })
+    .innerJoinAndSelect(Category, "Category")
+    .andWhere("Category.TaskId=:TaskId", { TaskId: 1 })
+    .getOne();
 };
 
 //deletedata

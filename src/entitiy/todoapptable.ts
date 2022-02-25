@@ -15,7 +15,7 @@ enum Status {
   InProgress = "InProgress",
   Done = "Done",
 }
-enum Categories {
+export enum Categories {
   Home = "Home",
   Managmenet = "Managmenet",
   food = "food",
@@ -37,7 +37,7 @@ export class todoapptable extends BaseEntity {
   @Column({ type: "enum", enum: Status })
   Status: Status;
 
-  @Column({ type: "enum", enum: Categories })
+  @Column({ type: "text" })
   Categories: Categories;
 
   // @OneToMany(() => Category, (categoriess) => categoriess.user)

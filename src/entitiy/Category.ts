@@ -19,8 +19,8 @@ export class Category extends BaseEntity {
   @Column()
   name: string;
 
-  @Column()
-  statuss: boolean;
+  @Column({ nullable: true })
+  statuss: string;
 
   @OneToOne(() => todoapptable, (todoapptable) => todoapptable.id)
   @JoinColumn()
