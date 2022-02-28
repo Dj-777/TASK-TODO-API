@@ -5,6 +5,7 @@ import { categoryrouter } from "../router/categoryrouter";
 import { getdata } from "./todousercontroller";
 import { on } from "events";
 import { Console } from "console";
+import { homedir, userInfo } from "os";
 
 export const insertdatatocategory = async (req: any, res: any) => {
   const { id, taskId } = req.params;
@@ -17,32 +18,91 @@ export const insertdatatocategory = async (req: any, res: any) => {
     .into(Category)
     .values([{ name: name, task: id }])
     .execute();
-  const { updates } = req.body;
+
+  const user: any = await Category.findOne(id);
+  console.log("user", user);
+
+  // const getdatatocategorybyorm: any = await getConnection()
+  //   .createQueryBuilder()
+  //   .select(["todoapptable"])
+  //   .from(todoapptable, "todoapptable")
+  //   .where("todoapptable.id=:id", { id: id })
+  //   .innerJoinAndSelect(Category, "category")
+  //   .andWhere("category.taskId=:taskId", { taskId: taskidd })
+  //   .execute();
+
+  const getdatatocategorybyorm = await todoapptable.findOne({
+    where: { id: id },
+  });
+  console.log("getdata", getdatatocategorybyorm);
+
+  console.log(getdatatocategorybyorm?.Categories);
+  // const { updates, getdatatocategorybyorm: any } = req.body;
+  // console.log("data", updates, getdatatocategorybyorm);
+
+  // const updates = getdatatocategorybyorm;
+  // console.log(updates);
+  if (
+    getdatatocategorybyorm?.Categories === Categories.Home ||
+    getdatatocategorybyorm?.Categories === Categories.Managmenet ||
+    getdatatocategorybyorm?.Categories === Categories.food
+  ) {
+    user.statuss = "have";
+  } else {
+    user.statuss = "not have";
+  }
+  await user.save();
 };
 
 export const updatestatus = async (req: any, res: any) => {
   const { id, taskId } = req.params;
 
-  console.log(id);
-
+  const taskidd = taskId;
+  const user: any = await Category.findOne({ where: { task: taskidd } });
   const getdatatocategorybyorm = await getConnection()
     .createQueryBuilder()
-    .select(["todoapptable.id", "todoapptable.Categories"])
+    .select(["todoapptable"])
     .from(todoapptable, "todoapptable")
     .where("todoapptable.id=:id", { id: id })
-    .innerJoinAndSelect(Category, "Category")
-    .andWhere("Category.taskId=:taskId", { taskId: taskId })
+    .innerJoinAndSelect(Category, "category")
+    .andWhere("category.taskId=:taskId", { taskId: taskidd })
     .execute();
 
-  const user = await Category.findOne(taskId);
-  console.log(user);
+  const updates: any = getdatatocategorybyorm[0];
+  console.log(updates);
+  // let homecate: Categories = Categories.Home;
+  // let managcate: Categories = Categories.Managmenet;
+  // let foodcate: Categories = Categories.food;
 
-  const update: any = getdatatocategorybyorm;
+  //  const a: any = typeof user;
 
-  if (update === Categories.Home || update === Categories.Managmenet) {
+  // const check: any =
+  //   Categories[homecate] === Categories[Categories.Home] ||
+  //   Categories[managcate] === Categories[Categories.Managmenet] ||
+  //   Categories[foodcate] === Categories[Categories.food];
+
+  if (
+    updates.todoapptable_Categories === Categories.Home ||
+    updates.todoapptable_Categories === Categories.Managmenet ||
+    updates.todoapptable_Categories === Categories.food
+  ) {
+    // const user: any = await getConnection()
+    //   .createQueryBui    lder()
+    //   .update(Category)
+    //   .set({ statuss: "Have" })
+    //   .where({ task: taskidd })
+    //   .execute();
+    // await user.save();
     user.statuss = "have";
   } else {
-    user.statuss = "Not have";
+    // const users: any = await getConnection()
+    //   .createQueryBuilder()
+    //   .update(Category)
+    //   .set({ statuss: "Not have" })
+    //   .where({ task: taskidd })
+    //   .execute();
+    // await users.save();
+    user.statuss = "not have";
   }
   await user.save();
 };
